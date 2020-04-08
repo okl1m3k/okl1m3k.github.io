@@ -1,1 +1,232 @@
-"Hello covid" 
+<h1>COVID pandemic around the world<br/>
+Clustering behaviour in different countries with DBSCAN algorithm</h1>
+
+
+<h2>1. Introduction</h2>
+<ul>
+<li>
+<i>What data was analyzed?</i>
+<p>I analyzed time series of confirmed COVID cases in different countries around the world. For (almost) every country in the world I had a list of dates and count of coronavirus cases confirmed by the test outcome.  I used the data from Kaggle <a href="https://www.kaggle.com/sudalairajkumar/novel-corona-virus-2019-dataset" target="_blank">Novel Corona Virus 2019 Dataset</a> with addition of more detailed data for Poland (from <a href="https://kwirus.pl/" target="_blank">KWIRUS.pl</a>) and some statistical data (GDP, population, population density) from Wikipedia.</p>
+</li>
+<li>
+<i>What is the purpose of this analysis?</i>
+<p>I wanted to be able to compare how the coronavirus pandemic develops in various countries. I accounted for various factors: different population of the country, different dates the coronavirus reached the given country etc. I wanted to have a simple tool with which I could look at any two countries and compare them.</p>
+</li>
+<li>
+<i>What methods did I use to analyze the data?</i>
+<p>I was inspired by the <a href="http://nrg.cs.ucl.ac.uk/mjh/covid19/" target="_blank">analysis of Mark Handley from UCL</a>. My methodology was similar: analyzing confirmed cases count on logarithmic scale, computing the daily increase rate (%) as the angle on the plot of confirmed cases in time with logarithmic scale. I went one step further and used machine learning: I clustered time series for countries with DBSCAN algorithm. In this way I extracted several groups of patterns followed by different countries.</p>
+</li>
+</ul>
+<h2>2. The analysis</h2>
+<h3>2.1 Italy – analyzing one country</h3>
+<p>Here are 4 plots that are basic tools of analysis of confirmed cases for a given country. In this cases it is Italy. Italy was the first country in Europe to have a major coronavirus outbreak. The first 2 plots in the upper row are just standard time series of cumulative number of cases (left) and daily new cases (right). The scale is linear. The exponential grow makes it difficult to show more details. However, the daily new cases (right) has started to decline a few days ago – the peak is clearly visible.</p> 
+<p>The biggest plot (second row) shows the same data as the plot on the left but has logarithmic scale. In order not to analyze noise I choose as the beginning of pandemic (day 0) the day the cumulative number of cases was 100 or above. This is quite standard approach accross many analysis which can be found online.</p>
+<p>There are a few straight lines fitted to the curve. Each line represents an exponential function with different parameters. It seems that:</p>
+<ul>
+<li>up to the day 10 the daily increase was roughly 43%. It means doubling the number of cases every 1.94 days</li>
+<li>after the day 10 the daily increase was 22%. It means doubling the number of cases every 3.46 days</li>
+<li>The daily increase kept slowing down to 13% (day 24), 8% (day 31). Currently it is 3% which means doubling every 20.61 days.</li>
+</ul>
+<p>The last last plot shows daily increase (in %) as it slowed down from above 40% in the begining to 3%.</p>
+<p>For me the plot indicates that the major factor that contributed to the tragic situation in Italy was not stopping the spread in first 2 weeks where the daily increase rates were extremely high.</p>
+
+<h3>2.2 Comparing selected countries</h3>
+<p>The next step of the analysis was comparing multiple countries together on one plot. I selected a few countries (China, Italy, Spain, US etc.) which have been making headlines recently and my home country – Poland. For China I restricted data to Hubei province, for the US – to New York state.
+</p>
+<p>Here are the major countries plotted together. I made a few changes to the plots which make the visulization nicer and easier to look at:</p>
+<ul>
+<li>normalizing the confirmed cases by the population of a given country/region – the y axis is now count per million inhabitants</li>
+<li>now the day 0 of epidemic is the day when there were at least 10 confirmed cases per million inhabitants</li>
+<li>smoothing daily increase over one week and computing it for week 0, week 1, week 2 etc. The plot now looks like stairs :)</li>
+</ul>
+<p>Here are the key observations:</p>
+<ul>
+<li>Spain and New York, US have an order of magnitude more cases than other countries had (Hubei, China, Italy etc.) at this stage of epidemic</li>
+<li>New York, US had extremely high daily increase % in week 0 and week 1 before joining the other countries in week 2</li>
+<li>Spain had extremely high daily increase % in week 0 before joining the other countries in week 1</li>
+<li>South Korea had quite high daily increase % in week 0 but managed to slow it down much better than other countries</li>
+<li>Germany follows the same path as Italy. However, reading the news, I know that Germany is performing much more tests and the situation in Germany is much better than in Italy. It is the limitation of analyzing only confirmed cases data.</li>
+<li>Poland (my home country) daily increase were lower from the beginning. Hopefully it is an effect of the early lockdown, not the limited testing capability.</li>
+</ul>
+<h3>2.3 Clustering all the countries</h3>
+<p>Finally having established good methods to plot countries together I switched to machine learning. I wanted to cluster countries so that countries with similar behaviour could be detected automatically.</p>
+<h4>What is clustering?</h4>
+<p>Clustering is an unsupervised machine learning technique. Clustering algorithm finds by itself groups (so called clusters) of records such that objects in one group are more similar to each other than to those in other groups. Here is a <a href="https://scikit-learn.org/stable/modules/clustering.html" target="_blank">good primer on clustering methods</a> from scikit-learn library.  </p>
+<p>Here are  typical results from a clustering algorithm which detected 3 clusters in the data (image source: <a href="https://scikit-learn.org/" target="_blank">scikit-learn</a>)</p>
+
+<h4>Clustering methodology</h4>
+<p>I used DBSCAN clustering algorithm (more precisely <a href="https://scikit-learn.org/stable/modules/generated/sklearn.cluster.DBSCAN.html" target="_blank">the scikit-learn implemenation</a>). Each clustering algorithm needs either a vectorization of the records to be clustered or a definition of a distance between the records. I used the mean relative difference in logarithm confirmed cases counts averaged over time. I also added a small addition for the mean relative difference in daily increase % averaged over time. The purpose is of such an addition is to favour clustering countries with similar dynamics of changes not only similar counts. The most important hyperparameter in DBSCAN algorithm is the epsilon parameter - ε .  I chose the ε  by hand, trying to maximize the number of clusters and minimize the number of points outside any cluster. I tested about 5 different values of ε . I use minimum sample size=3.  DBSCAN has a known limitation of assuming a constant density of data points in all clusters. To overcome it I run two additional clustering rounds:</p>
+<ul>
+<li>with ε /2 to divide the biggest clusters</li>
+<li>with 2 ε  to additionally cluster noise points outside any cluster</li>
+</ul>
+<p>From all the countries in the world I kept 65 countries which:</p>
+<ul>
+<li>population of at least 1 million</li>
+<li>have reached at least 10 cases per million inhabitants at least 2 weeks ago</li>
+<li>have more than 100 cases</li>
+</ul>
+<h4>Clustering results</h4>
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg .tg-0lax{text-align:left;vertical-align:top}
+</style>
+<table class="tg">
+  <tr>
+    <th class="tg-0lax"><br>			cluster<br>		</th>
+    <th class="tg-0lax"><br>			countries<br>		</th>
+    <th class="tg-0lax"><br>			cluster description<br>		</th>
+    <th class="tg-0lax"><br>			mean GDP per capita ($) (nominal)<br>		</th>
+    <th class="tg-0lax"><br>			mean daily increase % week_0<br>		</th>
+    <th class="tg-0lax"><br>			mean daily increase % week_1<br>		</th>
+    <th class="tg-0lax"><br>			mean infected count per million<br>			week_0<br>		</th>
+    <th class="tg-0lax"><br>			mean infected count per million<br>			week_1<br>		</th>
+  </tr>
+  <tr>
+    <td class="tg-0lax"><br>			outside cluster<br>		</td>
+    <td class="tg-0lax"><br>			Bahrain, China, Denmark, Estonia,<br>			Israel, Korea, South, Kuwait, Qatar, Singapore, Slovenia, Trinidad<br>			and Tobago, Uruguay, US<br>		</td>
+    <td class="tg-0lax"><br>			Noise points not belongig to any<br>			cluster<br>		</td>
+    <td class="tg-0lax"><br>			38553<br>		</td>
+    <td class="tg-0lax"><br>			38%<br>		</td>
+    <td class="tg-0lax"><br>			14%<br>		</td>
+    <td class="tg-0lax"><br>			79<br>		</td>
+    <td class="tg-0lax"><br>			255<br>		</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax"><br>			cluster 0<br>		</td>
+    <td class="tg-0lax"><br>			Austria, Portugal, Spain,<br>			Switzerland<br>		</td>
+    <td class="tg-0lax"><br>			Spain and alike. Countries with<br>			extremely high number of cases. Very high increases 40% in the<br>			week 0. Slowed down to 24% in week 1.<br>		</td>
+    <td class="tg-0lax"><br>			46682<br>		</td>
+    <td class="tg-0lax"><br>			40%<br>		</td>
+    <td class="tg-0lax"><br>			24%<br>		</td>
+    <td class="tg-0lax"><br>			79<br>		</td>
+    <td class="tg-0lax"><br>			352<br>		</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax"><br>			cluster 1<br>		</td>
+    <td class="tg-0lax"><br>			Ireland, Norway, Turkey<br>		</td>
+    <td class="tg-0lax"><br>			Very similar to Spanish cluster.<br>			Very high increases in week 0. Slowing down in the week 1 more<br>			efficiently than cluster 0. <br>			<br>		</td>
+    <td class="tg-0lax"><br>			54901<br>		</td>
+    <td class="tg-0lax"><br>			43%<br>		</td>
+    <td class="tg-0lax"><br>			19%<br>		</td>
+    <td class="tg-0lax"><br>			92<br>		</td>
+    <td class="tg-0lax"><br>			309<br>		</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax"><br>			cluster 2<br>		</td>
+    <td class="tg-0lax"><br>			Belgium, Canada, France, Italy,<br>			Netherlands, Panama, United Kingdom<br>		</td>
+    <td class="tg-0lax"><br>			Italy and similar. Slightly slower<br>			than Spain but still the average growth in week 0 was 29%<br>		</td>
+    <td class="tg-0lax"><br>			39390<br>		</td>
+    <td class="tg-0lax"><br>			29%<br>		</td>
+    <td class="tg-0lax"><br>			22%<br>		</td>
+    <td class="tg-0lax"><br>			46<br>		</td>
+    <td class="tg-0lax"><br>			184<br>		</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax"><br>			cluster 3<br>		</td>
+    <td class="tg-0lax"><br>			Armenia, Australia, Bosnia and<br>			Herzegovina, Chile, Croatia, Czechia, Finland, Germany, Lithuania,<br>			Moldova, Romania, Serbia<br>		</td>
+    <td class="tg-0lax"><br>			Countries similar to cluster 1 and 2<br>			but with no such sharp distinction from the others.<br>		</td>
+    <td class="tg-0lax"><br>			21296<br>		</td>
+    <td class="tg-0lax"><br>			29%<br>		</td>
+    <td class="tg-0lax"><br>			16%<br>		</td>
+    <td class="tg-0lax"><br>			54<br>		</td>
+    <td class="tg-0lax"><br>			154<br>		</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax"><br>			cluster 4<br>		</td>
+    <td class="tg-0lax"><br>			Dominican Republic, Ecuador, Iran,<br>			Latvia, Mauritius, New Zealand, North Macedonia, Sweden<br>		</td>
+    <td class="tg-0lax"><br>			Very fast daily increase in the week<br>			0 - 36%. Slowed down a lot in the week 1. Perhaps due to lower<br>			testing capacity.<br>		</td>
+    <td class="tg-0lax"><br>			18611<br>		</td>
+    <td class="tg-0lax"><br>			36%<br>		</td>
+    <td class="tg-0lax"><br>			12%<br>		</td>
+    <td class="tg-0lax"><br>			68<br>		</td>
+    <td class="tg-0lax"><br>			152<br>		</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax"><br>			cluster 5<br>		</td>
+    <td class="tg-0lax"><br>			Bulgaria, Costa Rica, Greece,<br>			Hungary, Malaysia, Poland, Saudi Arabia, Slovakia<br>		</td>
+    <td class="tg-0lax"><br>			Mostly Central Eastern Europe<br>			cluster. Consistently slower daily increases (21% and 10%) than<br>			Western&nbsp;&nbsp;Europe.<br>		</td>
+    <td class="tg-0lax"><br>			15927<br>		</td>
+    <td class="tg-0lax"><br>			21%<br>		</td>
+    <td class="tg-0lax"><br>			10%<br>		</td>
+    <td class="tg-0lax"><br>			33<br>		</td>
+    <td class="tg-0lax"><br>			67<br>		</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax"><br>			cluster 6<br>		</td>
+    <td class="tg-0lax"><br>			Albania, Brazil, Lebanon, Peru,<br>			United Arab Emirates<br>		</td>
+    <td class="tg-0lax"><br>			Countries with warm climate.<br>			Consistently slower daily increases (14% and 15%) with little<br>			slowing down between week 0 and week 1.<br>		</td>
+    <td class="tg-0lax"><br>			13723<br>		</td>
+    <td class="tg-0lax"><br>			14%<br>		</td>
+    <td class="tg-0lax"><br>			15%<br>		</td>
+    <td class="tg-0lax"><br>			22<br>		</td>
+    <td class="tg-0lax"><br>			58<br>		</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax"><br>			cluster 7<br>		</td>
+    <td class="tg-0lax"><br>			Georgia, Jordan, Oman, Thailand,<br>			West Bank and Gaza<br>		</td>
+    <td class="tg-0lax"><br>			Countries with warm climate.<br>			Consistently slower daily increases (13% and 8%) with slowing down<br>			between week 0 and week 1.<br>		</td>
+    <td class="tg-0lax"><br>			7491<br>		</td>
+    <td class="tg-0lax"><br>			13%<br>		</td>
+    <td class="tg-0lax"><br>			8%<br>		</td>
+    <td class="tg-0lax"><br>			20<br>		</td>
+    <td class="tg-0lax"><br>			34<br>		</td>
+  </tr>
+</table>
+
+<p>The clusters are ordered by count of confirmed cases per million inhabitants after 2 weeks (descending). It also means that the average daily increase % is lower for the last few clusters. It is worth noting that the cluster number seems to correlate with GDP per capita. It may indicate that fewer reported cases are result of smaller testing capacity in the poorer countries.  However, there also seems to some correlation with climate. Further clusters tend to contain warmer countries.
+It is also worth noting that the distribution of daily increase % in the week 0 seems to be the most sparse. It tends converge for later weeks (week 1, week 2 etc.)</p>
+<h2>3. Conclusions</h2>
+<ul>
+<li>different countries experience different daily increase % (growth rates) in various stages of the pandemic. The daily increase usually slows down after 2-3 weeks.</li>
+<li>many countries follow similar trajectories of the pandemic development. However different clusters of beaviour seem to correlate with GDP per capita and/or climate (???)</li>
+<li>if the country didn’t slow down the exponential grow in the first week, the results are bad</li>
+<li>it is very hard to account for underreporting of coronavirus cases by analyzing only the confirmed cases data.</li>
+</ul>
+<h2>4. Limitations</h2>
+<p>What are the limitations of this analysis?</p>
+<h3>4.1 Using only counts of confirmed cases</h3>
+<p>It would be nice to include other currently available data: daily count of death cases, daily count of performed tests, daily count of recovered cases. I only use confirmed cases counts, I do not compute  CFR (case fatality rate) which is a crucial factor.
+In the future (some time after pandemic) it would be nice to include the statistics of all deaths in a country. Unreported coronavirus cases could be accounted for with increase in deaths during pandemic relative to the previous year. The availability of such data may strongly depend on the country.<p>
+<i>Links</i>
+<p>Here are the sources hinting the large numbers of unreported coronavirus deaths:</p>
+<ul>
+<li>
+<a href="https://westhunt.wordpress.com/2020/03/25/just-another-flu-in-bergamo/?fbclid=IwAR3B3xwT7BnUPMQQCgm857Cq3Xw6PSVvSCmwUbrkqLvIk82b-MKnr7HsycE" target="_blank">
+Just Another Flu in Bergamo
+</a>
+</li>
+<li>
+<a href="https://www.rfa.org/english/news/china/wuhan-deaths-03272020182846.html" target="_blank">
+Wuhan Deaths</a></li>
+</ul>
+<h3>4.2 Different testing capacity in different countries</h3>
+<p>Around the world, countries test and detect different percentage of the coronavirus cases. Most probably some countries detect only a small sample of real cases, in other countries only most obvious cases are tested and asymptotic coronavirus carriers are undetected. Some high-tech societies (for example South Korea) are known to track and test every single contact of a coronavirus case.</p>
+<p>It would be good if for a given country the ratio detected cases and all cases would be constant in time. In such situation we would be able to evaluate the daily increase % factor. Sadly, it may not be the cases when the pandemic overwhelms country’s health system or when the country increases its testing capability gradually as repsonse to the pandemic.</p>
+<p>For example the official number of coronavirus cases is similar in 
+<a href="https://www.worldometers.info/coronavirus/country/ecuador/" target="_blank">
+Ecuador</a> and in <a href="https://www.worldometers.info/coronavirus/country/south-korea/" target="_blank">South Korea</a> (about 190 deaths as of April 7th 2020) but the situation in these two countries is quite the opposite: in South Korea daily life is relatively unaffected whereas in Ecuador government cannot manage to collect dead bodies from the streets. It is a clear example of underreporting and overwhelmed health system.</p> 
+<i>Links</i>
+<p>Here are links to articles describing situation in Ecuador and in South Korea</p>
+<ul>
+<li>
+<a href="https://edition.cnn.com/2020/04/03/americas/guayaquil-ecuador-overwhelmed-coronavirus-intl/index.html" target="_blank">
+Bodies are being left in the streets in an overwhelmed Ecuadorian city</a>
+</li>
+<li>
+<a href="https://www.sciencemag.org/news/2020/03/coronavirus-cases-have-dropped-sharply-south-korea-whats-secret-its-success">Coronavirus cases have dropped sharply in South Korea. What’s the secret to its success?</a>
+</li>
+</ul>
+<h3>4.3 Not modelling the pandemic</h3>
+<p>I am not an epidemiologist. I do not model the pandemic with differential equations. I only fit exponential functions to the data. I do not make any predictions for the future apart from fitting trends. As far as I know the most popular model in epidemiology is SEIR.</p>
+<i>Links</i>
+<p>Here are links to analysis based on variations of SEIR model:</p>
+<ul>
+<li><a href="http://gabgoh.github.io/COVID/index.html" target="_blank">Epidemic Calculator</a></li>
+<li><a href="https://rmostowy.github.io/covid-19/prognoza-polska/" target="_blank">Pomiar i prognoza pandemii COVID-19 w Polsce w czasie rzeczywistym (in Polish)</a></li>
+</ul>
+
+<h4>Who am I?</h4>
+I am Aleksandra Chrabrowa and here is my <a href="https://www.linkedin.com/in/achrabrowa " target="_blank">LinkedIn profile</a>.
