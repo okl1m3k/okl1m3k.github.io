@@ -1,5 +1,6 @@
 <head>
   <title>Clustering COVID-19 around the world with DBSCAN algorithm</title>
+  <meta name="thumbnail" content="img/cluster_covid.png" />
 </head>
 
 <body>
@@ -12,7 +13,7 @@ Clustering COVID-19 around the world with DBSCAN algorithm
 <ul>
 <li>
 <i>What data was analyzed?</i>
-<p>I analyzed time series of confirmed COVID-19 cases in different countries around the world. For (almost) every country in the world I had a list of dates and count of coronavirus cases confirmed by the test outcome.  I used the data from Kaggle <a href="https://www.kaggle.com/sudalairajkumar/novel-corona-virus-2019-dataset" target="_blank">Novel Corona Virus 2019 Dataset</a> with addition of more detailed data for Poland (from <a href="https://kwirus.pl/" target="_blank">KWIRUS.pl</a>) and some statistical data (GDP, population, population density) from Wikipedia.</p>
+<p>I analyzed time series of confirmed COVID-19 cases in different countries around the world. For (almost) every country in the world I had a list of dates and count of coronavirus cases confirmed by the test outcome.  I used the data from Kaggle <a href="https://www.kaggle.com/sudalairajkumar/novel-corona-virus-2019-dataset" target="_blank">Novel Corona Virus 2019 Dataset</a> with addition of more detailed data for my home country - Poland (from <a href="https://kwirus.pl/" target="_blank">KWIRUS.pl</a>) and some statistical data (GDP, population, population density, average yearly temperature) from Wikipedia.</p>
 </li>
 <li>
 <i>What is the purpose of this analysis?</i>
@@ -32,7 +33,7 @@ Clustering COVID-19 around the world with DBSCAN algorithm
 <ul>
 <li>up to the day 10 the daily increase was roughly 43%. It means doubling the number of cases every 1.94 days</li>
 <li>after the day 10 the daily increase was 22%. It means doubling the number of cases every 3.46 days</li>
-<li>The daily increase kept slowing down to 13% (day 24), 8% (day 31). Currently it is 3% which means doubling every 20.61 days.</li>
+<li>The daily increase kept slowing down to 13% (day 24), 8% (day 31). Currently it is 3% which means doubling every 26.63 days.</li>
 </ul>
 <p>The last last plot shows daily increase (in %) as it slowed down from above 40% in the begining to 3%.</p>
 <p>For me the plot indicates that the major factor that contributed to the tragic situation in Italy was not stopping the spread in first 2 weeks where the daily increase rates were extremely high.</p>
@@ -59,23 +60,23 @@ Clustering COVID-19 around the world with DBSCAN algorithm
 <h3>2.3 Clustering all the countries</h3>
 <p>Finally having established good methods to plot countries together I switched to machine learning. I wanted to cluster countries so that countries with similar behaviour could be detected automatically.</p>
 <h4>What is clustering?</h4>
-<p>Clustering is an unsupervised machine learning technique. Clustering algorithm finds by itself groups (so called clusters) of records such that objects in one group are more similar to each other than to those in other groups. Here is a <a href="https://scikit-learn.org/stable/modules/clustering.html" target="_blank">good primer on clustering methods</a> from scikit-learn library.  </p>
+<p>Clustering is an unsupervised machine learning technique. Clustering algorithm finds by itself groups (so called clusters) such that objects in one group are more similar to each other than to those in other groups. Here is a <a href="https://scikit-learn.org/stable/modules/clustering.html" target="_blank">good primer on clustering methods</a> from scikit-learn library.  </p>
 <p>Here are  typical results from a clustering algorithm which detected 3 clusters in the data (image source: <a href="https://scikit-learn.org/" target="_blank">scikit-learn</a>)</p>
 <img src="img/dbscan_scikit.png" alt="clustering example">
 <h4>Clustering methodology</h4>
-<p>I used DBSCAN clustering algorithm (more precisely <a href="https://scikit-learn.org/stable/modules/generated/sklearn.cluster.DBSCAN.html" target="_blank">the scikit-learn implemenation</a>). Each clustering algorithm needs either a vectorization of the records to be clustered or a definition of a distance between the records. I used the mean relative difference in logarithm confirmed cases counts averaged over time. I also added a small addition for the mean relative difference in daily increase % averaged over time. The purpose is of such an addition is to favour clustering countries with similar dynamics of changes not only similar counts. The most important hyperparameter in DBSCAN algorithm is the epsilon parameter - ε .  I chose the ε  by hand, trying to maximize the number of clusters and minimize the number of points outside any cluster. I tested about 5 different values of ε . I use minimum sample size=3.  DBSCAN has a known limitation of assuming a constant density of data points in all clusters. To overcome it I run two additional clustering rounds:</p>
+<p>I used DBSCAN clustering algorithm (more precisely <a href="https://scikit-learn.org/stable/modules/generated/sklearn.cluster.DBSCAN.html" target="_blank">the scikit-learn implemenation</a>). Each clustering algorithm needs either a vectorization of the records to be clustered or a definition of a distance between the records. I used the mean relative difference in logarithm of confirmed cases counts averaged over time. I also included a small addition for the mean relative difference in daily increase % averaged over time. The purpose is of such an addition is to favour clustering countries with similar dynamics of changes not only with similar counts. The most important hyperparameter in DBSCAN algorithm is the epsilon parameter - ε .  I chose the ε  by hand, trying to maximize the number of clusters and minimize the number of points outside any cluster. I tested about 5 different values of ε . I use minimum sample size=3.  DBSCAN has a known limitation of assuming a constant density of data points in all clusters. To overcome it I ran two additional clustering rounds:</p>
 <ul>
-<li>with ε /2 to divide the biggest clusters</li>
-<li>with 2 ε  to additionally cluster noise points outside any cluster</li>
+<li>with ε/2 to divide the biggest clusters into smaller subclusters</li>
+<li>with 2ε  to additionally cluster noise points outside any cluster</li>
 </ul>
-<p>From all the countries in the world I kept 73 countries which:</p>
+<p>From all the countries in the world I kept 73 countries which have:</p>
 <ul>
 <li>population of at least 1 million</li>
-<li>have reached at least 10 cases per million inhabitants at least 2 weeks ago</li>
-<li>have more than 100 cases</li>
+<li>reached at least 10 cases per million inhabitants at least 2 weeks ago</li>
+<li>more than 100 cases</li>
 </ul>
 <h4>Clustering results</h4>
-<p>Here are the clustering results. The first plots are the as the previous plots comparing different countries. This time the lines with the same color correspond to the countries in the same cluster. Below the plots there is a table with basic information about every cluster.</p>
+<p>Here are the clustering results. The first plots are the same as the previous plots comparing different countries. This time the lines with the same color correspond to the countries in the same cluster. Below the plots there is a table with basic information about every cluster.</p>
 <img src="img/cluster_covid.png" alt="clustering example">
 <style type="text/css">
 .tg  {border-collapse:collapse;border-spacing:0;}
@@ -88,24 +89,37 @@ Clustering COVID-19 around the world with DBSCAN algorithm
 </style>
 <table class="tg">
   <tr>
-    <th class="tg-j1i3">cluster</th>
-    <th class="tg-j1i3">countries</th>
-    <th class="tg-j1i3">cluster description</th>
-    <th class="tg-j1i3">GDP per capita ($) (nominal)</th>
-    <th class="tg-j1i3">average yearly temperature (degree Celsius)</th>
-    <th class="tg-j1i3">daily increase % week_0</th>
-    <th class="tg-j1i3">daily increase % week_1</th>
-    <th class="tg-j1i3">daily increase % week_2</th>
-    <th class="tg-ul38">infected count per million week_0</th>
-    <th class="tg-ul38">infected count per million week_1</th>
-    <th class="tg-ul38">infected count per million week_2</th>
+    <th class="tg-j1i3"><b>cluster</b></th>
+    <th class="tg-j1i3"><b>countries</b></th>
+    <th class="tg-j1i3"><b>cluster description</b></th>
+    <th class="tg-j1i3"><b>average GDP per capita nominal ($)</b></th>
+    <th class="tg-j1i3"><b>average yearly temperature (°C)</b></th>
+    <th class="tg-j1i3"><b>average daily increase (%) week 0</b></th>
+    <th class="tg-j1i3"><b>average daily increase (%) week 1</b></th>
+    <th class="tg-j1i3"><b>average daily increase (%) week 2</b></th>
+    <th class="tg-ul38"><b>average infected count per million week 0</b></th>
+    <th class="tg-ul38"><b>average infected count per million week 1</b></th>
+    <th class="tg-ul38"><b>average infected count per million week 2</b></th>
+  </tr>
+   <tr>
+    <td class="tg-0pky">N/A</td>
+    <td class="tg-0pky"><i>averages for all 73 analyzed countries</i></td>
+    <td class="tg-0pky">N/A</td>
+    <td class="tg-0pky"><i>25 525$</i></td>
+    <td class="tg-0pky"><i>14°C</i></td>
+    <td class="tg-0pky"><i>28%</i></td>
+    <td class="tg-0pky"><i>14%</i></td>
+    <td class="tg-0pky"><i>11%</i></td>
+    <td class="tg-0lax"><i>53</i></td>
+    <td class="tg-0lax"><i>157</i></td>
+    <td class="tg-0lax"><i>442</i></td>
   </tr>
   <tr>
     <td class="tg-0pky">outside cluster</td>
-    <td class="tg-0pky">Bahrain, China, Denmark, Djibouti, Estonia, Israel, Lebanon, Oman, Qatar, Slovenia, Trinidad and Tobago, US, Kosovo</td>
+    <td class="tg-0pky">Bahrain, Hubei, China, Denmark, Djibouti, Estonia, Israel, Lebanon, Oman, Qatar, Slovenia, Trinidad and Tobago, New York, US, Kosovo</td>
     <td class="tg-0pky">noise points not belonging to any cluster</td>
-    <td class="tg-0pky">30331</td>
-    <td class="tg-0pky">17</td>
+    <td class="tg-0pky">30 331$</td>
+    <td class="tg-0pky">17°C</td>
     <td class="tg-0pky">38%</td>
     <td class="tg-0pky">15%</td>
     <td class="tg-0pky">10%</td>
@@ -117,8 +131,8 @@ Clustering COVID-19 around the world with DBSCAN algorithm
     <td class="tg-0pky">cluster 0</td>
     <td class="tg-0pky">Ireland, Norway, Turkey</td>
     <td class="tg-0pky">extremely high increase in week 0 (43%) and quite efficient slowing down in week 1 (but still high - 19%)</td>
-    <td class="tg-0pky">54901</td>
-    <td class="tg-0pky">7</td>
+    <td class="tg-0pky">54 901$</td>
+    <td class="tg-0pky">7°C</td>
     <td class="tg-0pky">43%</td>
     <td class="tg-0pky">19%</td>
     <td class="tg-0pky">11%</td>
@@ -129,9 +143,9 @@ Clustering COVID-19 around the world with DBSCAN algorithm
   <tr>
     <td class="tg-0pky">cluster 1</td>
     <td class="tg-0pky">Armenia, Australia, Austria, Belgium, Bosnia and Herzegovina, Chile, Croatia, Czechia, Finland, Germany, Lithuania, Moldova, Portugal, Romania, Serbia, Spain, Switzerland</td>
-    <td class="tg-0pky">High increases in week 0 (31%) followed by high increase in week 1 (18%) This is quite diverse cluster and cluster 2 and cluster 3 are subparts of it with more specific behaviour. However it contains a lot of Western European countries with moderate climate and quite high GDP</td>
-    <td class="tg-0pky">28674</td>
-    <td class="tg-0pky">9</td>
+    <td class="tg-0pky">High increases in week 0 (31%) followed by high increase in week 1 (18%) This is quite a diverse cluster and cluster 2 and cluster 3 are subparts of it with more specific behaviour. However it contains a lot of Western European countries with moderate climate and quite high GDP</td>
+    <td class="tg-0pky">28 674$</td>
+    <td class="tg-0pky">9°C</td>
     <td class="tg-0pky">31%</td>
     <td class="tg-0pky">18%</td>
     <td class="tg-0pky">13%</td>
@@ -143,8 +157,8 @@ Clustering COVID-19 around the world with DBSCAN algorithm
     <td class="tg-0pky">cluster 2</td>
     <td class="tg-0pky">Canada, France, Italy, Netherlands, Panama, United Kingdom</td>
     <td class="tg-0pky">High increases in week 0 (29%) not slowed down much in week 1 (22%). High GDP (Western Europe mostly) and moderate climate</td>
-    <td class="tg-0pky">38426</td>
-    <td class="tg-0pky">10</td>
+    <td class="tg-0pky">38 426$</td>
+    <td class="tg-0pky">10°C</td>
     <td class="tg-0pky">29%</td>
     <td class="tg-0pky">22%</td>
     <td class="tg-0pky">15%</td>
@@ -155,9 +169,9 @@ Clustering COVID-19 around the world with DBSCAN algorithm
   <tr>
     <td class="tg-0pky">cluster 3</td>
     <td class="tg-0pky">Dominican Republic, Ecuador, Iran, Latvia, Mauritius, New Zealand, North Macedonia, Sweden</td>
-    <td class="tg-0pky">Extremely high incease in week 0 (36%) slowed down more efficiently to 12%. Much lower GDP than cluster 2 and 1</td>
-    <td class="tg-0pky">18611</td>
-    <td class="tg-0pky">14</td>
+    <td class="tg-0pky">Extremely high increase in week 0 (36%) slowed down more efficiently than cluster 2 (to 12%). Much lower GDP than cluster 2 and 1</td>
+    <td class="tg-0pky">18 611$</td>
+    <td class="tg-0pky">14°C</td>
     <td class="tg-0pky">36%</td>
     <td class="tg-0pky">12%</td>
     <td class="tg-0pky">8%</td>
@@ -169,8 +183,8 @@ Clustering COVID-19 around the world with DBSCAN algorithm
     <td class="tg-0pky">cluster 4</td>
     <td class="tg-0pky">Greece, Korea, South, Uruguay</td>
     <td class="tg-0pky">High increase in week 0 (28%) followed by slowing down to 12%</td>
-    <td class="tg-0pky">22811</td>
-    <td class="tg-0pky">15</td>
+    <td class="tg-0pky">22 811$</td>
+    <td class="tg-0pky">15°C</td>
     <td class="tg-0pky">28%</td>
     <td class="tg-0pky">12%</td>
     <td class="tg-0pky">5%</td>
@@ -182,8 +196,8 @@ Clustering COVID-19 around the world with DBSCAN algorithm
     <td class="tg-0pky">cluster 5</td>
     <td class="tg-0pky">Azerbaijan, Bulgaria, Costa Rica, Hungary, Malaysia, Poland, Saudi Arabia, Slovakia, Tunisia</td>
     <td class="tg-0pky">A lot of Central Eastern European countries and countries with warm climate. Countries started slower from the beginning (21%) and decreased to 10% in week 1. Moderate average GDP.</td>
-    <td class="tg-0pky">12824</td>
-    <td class="tg-0pky">16</td>
+    <td class="tg-0pky">12 824$</td>
+    <td class="tg-0pky">16°C</td>
     <td class="tg-0pky">21%</td>
     <td class="tg-0pky">10%</td>
     <td class="tg-0pky">6%</td>
@@ -195,8 +209,8 @@ Clustering COVID-19 around the world with DBSCAN algorithm
     <td class="tg-0pky">cluster 6</td>
     <td class="tg-0pky">Albania, Brazil, Peru, United Arab Emirates</td>
     <td class="tg-0pky">Countries which kept the increase at around 14% for 3 weeks.&nbsp;&nbsp;Warm climate.</td>
-    <td class="tg-0pky">14741</td>
-    <td class="tg-0pky">21</td>
+    <td class="tg-0pky">14 741$</td>
+    <td class="tg-0pky">21°C</td>
     <td class="tg-0pky">14%</td>
     <td class="tg-0pky">15%</td>
     <td class="tg-0pky">13%</td>
@@ -208,21 +222,21 @@ Clustering COVID-19 around the world with DBSCAN algorithm
     <td class="tg-0pky">cluster 7</td>
     <td class="tg-0pky">Argentina, Jordan, South Africa, Thailand</td>
     <td class="tg-0pky">Similar start to cluster 6 (15%) with slowing down in week 1. Warm climate.</td>
-    <td class="tg-0pky">7041</td>
-    <td class="tg-0pky">19</td>
+    <td class="tg-0pky">7 041$</td>
+    <td class="tg-0pky">19°C</td>
     <td class="tg-0pky">15%</td>
     <td class="tg-0pky">5%</td>
-    <td class="tg-0pky">NaN</td>
+    <td class="tg-0pky">N/A</td>
     <td class="tg-0lax">22</td>
     <td class="tg-0lax">32</td>
-    <td class="tg-0lax">NaN</td>
+    <td class="tg-0lax">N/A</td>
   </tr>
   <tr>
     <td class="tg-0lax">cluster 8</td>
     <td class="tg-0lax">Georgia, Japan, West Bank and Gaza</td>
     <td class="tg-0lax">Countries which kept the increase at around 9% for 3 weeks. Very diverse economically</td>
-    <td class="tg-0lax">16111</td>
-    <td class="tg-0lax">13</td>
+    <td class="tg-0lax">16 111$</td>
+    <td class="tg-0lax">13°C</td>
     <td class="tg-0lax">9%</td>
     <td class="tg-0lax">9%</td>
     <td class="tg-0lax">9%</td>
@@ -232,10 +246,10 @@ Clustering COVID-19 around the world with DBSCAN algorithm
   </tr>
   <tr>
     <td class="tg-0lax">cluster 9</td>
-    <td class="tg-0lax">Kuwait, Singapore, Taiwan*</td>
+    <td class="tg-0lax">Kuwait, Singapore, Taiwan</td>
     <td class="tg-0lax">High GDP countries with warm climate. Managed to keep extremely small increases for 3 weeks (3-6%)</td>
-    <td class="tg-0lax">39360</td>
-    <td class="tg-0lax">25</td>
+    <td class="tg-0lax">39 360$</td>
+    <td class="tg-0lax">25°C</td>
     <td class="tg-0lax">6%</td>
     <td class="tg-0lax">3%</td>
     <td class="tg-0lax">6%</td>
@@ -245,8 +259,8 @@ Clustering COVID-19 around the world with DBSCAN algorithm
   </tr>
 </table>
 
-<p>The clusters are ordered by count of confirmed cases per million inhabitants after 2 weeks (descending). It also means that the average daily increase % is lower for the last few clusters. It is worth noting that the cluster number seems to correlate with GDP per capita and average temperature. It may indicate that fewer reported cases are result of smaller testing capacity in the poorer countries. Or that transmission rate depends on the climate.  
-It is also worth noting that the distribution of daily increase % in the week 0 seems to be the most sparse. It tends converge for later weeks (week 1, week 2 etc.).</p>
+<p>The clusters are ordered by count of confirmed cases per million inhabitants after 2 weeks (descending). It also means that the average daily increase % is lower for the last few clusters. It is worth noting that the cluster number seems to correlate with GDP per capita and average temperature. It may indicate that fewer reported cases are result of smaller testing capacity in the poorer countries. Or that transmission rate depends on the climate. Further investigation is needed which effect is dominant - GDP or climate.</p>  
+<p>It is also worth noting that the distribution of daily increase % in the week 0 seems to be the most sparse. It tends converge for later weeks (week 1, week 2 etc.). In other words, the factor that makes the difference between the countries is the daily increase % in the early weeks.</p>
 <h2>3. Conclusions</h2>
 <ul>
 <li>different countries experience different daily increase % (growth rates) in various stages of the pandemic. The daily increase usually slows down after 2-3 weeks.</li>
