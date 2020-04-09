@@ -58,23 +58,7 @@ Clustering COVID-19 around the world with DBSCAN algorithm
 <li>Poland (my home country) daily increase were lower from the beginning. Hopefully it is an effect of the early lockdown, not the limited testing capability.</li>
 </ul>
 <h3>2.3 Clustering all the countries</h3>
-<p>Finally having established good methods to plot countries together I switched to machine learning. I wanted to cluster countries so that countries with similar behaviour could be detected automatically.</p>
-<h4>What is clustering?</h4>
-<p>Clustering is an unsupervised machine learning technique. Clustering algorithm finds by itself groups (so called clusters) such that objects in one group are more similar to each other than to those in other groups. Here is a <a href="https://scikit-learn.org/stable/modules/clustering.html" target="_blank">good primer on clustering methods</a> from scikit-learn library.  </p>
-<p>Here are  typical results from a clustering algorithm which detected 3 clusters in the data (image source: <a href="https://scikit-learn.org/" target="_blank">scikit-learn</a>)</p>
-<img src="img/dbscan_scikit.png" alt="clustering example">
-<h4>Clustering methodology</h4>
-<p>I used DBSCAN clustering algorithm (more precisely <a href="https://scikit-learn.org/stable/modules/generated/sklearn.cluster.DBSCAN.html" target="_blank">the scikit-learn implemenation</a>). Each clustering algorithm needs either a vectorization of the records to be clustered or a definition of a distance between the records. I used the mean relative difference in logarithm of confirmed cases counts averaged over time. I also included a small addition for the mean relative difference in daily increase % averaged over time. The purpose is of such an addition is to favour clustering countries with similar dynamics of changes not only with similar counts. The most important hyperparameter in DBSCAN algorithm is the epsilon parameter - ε .  I chose the ε  by hand, trying to maximize the number of clusters and minimize the number of points outside any cluster. I tested about 5 different values of ε . I use minimum sample size=3.  DBSCAN has a known limitation of assuming a constant density of data points in all clusters. To overcome it I ran two additional clustering rounds:</p>
-<ul>
-<li>with ε/2 to divide the biggest clusters into smaller subclusters</li>
-<li>with 2ε  to additionally cluster noise points outside any cluster</li>
-</ul>
-<p>From all the countries in the world I kept 73 countries which have:</p>
-<ul>
-<li>population of at least 1 million</li>
-<li>reached at least 10 cases per million inhabitants at least 2 weeks ago</li>
-<li>more than 100 cases</li>
-</ul>
+<p>Finally having established good methods to plot countries together I switched to machine learning. I wanted to cluster countries so that countries with similar behaviour could be detected automatically. Clustering is a machine learning technique of automatically detecting patterns in the data. For more technical details please read the section <b>5. Clustering - technical details</b></p>
 <h4>Clustering results</h4>
 <p>Here are the clustering results. The first plots are the same as the previous plots comparing different countries. This time the lines with the same color correspond to the countries in the same cluster. Below the plots there is a table with basic information about every cluster.</p>
 <img src="img/cluster_covid.png" alt="clustering example">
@@ -130,7 +114,7 @@ Clustering COVID-19 around the world with DBSCAN algorithm
   <tr>
     <td class="tg-0pky">cluster 0</td>
     <td class="tg-0pky">Ireland, Norway, Turkey</td>
-    <td class="tg-0pky">extremely high increase in week 0 (43%) and quite efficient slowing down in week 1 (but still high - 19%)</td>
+    <td class="tg-0pky">extremely high increase in week 0 (43%) and quite efficient slowing down in week 1 (but still high - 19%). Slowing down in the week 2 is substantial - to 11%.</td>
     <td class="tg-0pky">54 901$</td>
     <td class="tg-0pky">7°C</td>
     <td class="tg-0pky">43%</td>
@@ -143,7 +127,7 @@ Clustering COVID-19 around the world with DBSCAN algorithm
   <tr>
     <td class="tg-0pky">cluster 1</td>
     <td class="tg-0pky">Armenia, Australia, Austria, Belgium, Bosnia and Herzegovina, Chile, Croatia, Czechia, Finland, Germany, Lithuania, Moldova, Portugal, Romania, Serbia, Spain, Switzerland</td>
-    <td class="tg-0pky">High increases in week 0 (31%) followed by high increase in week 1 (18%) This is quite a diverse cluster and cluster 2 and cluster 3 are subparts of it with more specific behaviour. However it contains a lot of Western European countries with moderate climate and quite high GDP</td>
+    <td class="tg-0pky">High increases in week 0 (31%) followed by high increase in week 1 (18%) and lower but still above average in week 2 (13%). This is quite a diverse cluster and cluster 2 and cluster 3 are subparts of it with more specific behaviour. However it contains a lot of Western European countries with moderate climate and quite high GDP</td>
     <td class="tg-0pky">28 674$</td>
     <td class="tg-0pky">9°C</td>
     <td class="tg-0pky">31%</td>
@@ -156,7 +140,7 @@ Clustering COVID-19 around the world with DBSCAN algorithm
   <tr>
     <td class="tg-0pky">cluster 2</td>
     <td class="tg-0pky">Canada, France, Italy, Netherlands, Panama, United Kingdom</td>
-    <td class="tg-0pky">High increases in week 0 (29%) not slowed down much in week 1 (22%). High GDP (Western Europe mostly) and moderate climate</td>
+    <td class="tg-0pky">High increases in week 0 (29%) not slowed down much in week 1 (22%). Week 2 is also high - 15%. High GDP (Western Europe mostly) and moderate climate</td>
     <td class="tg-0pky">38 426$</td>
     <td class="tg-0pky">10°C</td>
     <td class="tg-0pky">29%</td>
@@ -169,7 +153,7 @@ Clustering COVID-19 around the world with DBSCAN algorithm
   <tr>
     <td class="tg-0pky">cluster 3</td>
     <td class="tg-0pky">Dominican Republic, Ecuador, Iran, Latvia, Mauritius, New Zealand, North Macedonia, Sweden</td>
-    <td class="tg-0pky">Extremely high increase in week 0 (36%) slowed down more efficiently than cluster 2 (to 12%). Much lower GDP than cluster 2 and 1</td>
+    <td class="tg-0pky">Extremely high increase in week 0 (36%) slowed down more efficiently than cluster 2 (to 12% and then to 8%). Much lower GDP than cluster 2 and 1</td>
     <td class="tg-0pky">18 611$</td>
     <td class="tg-0pky">14°C</td>
     <td class="tg-0pky">36%</td>
@@ -258,15 +242,17 @@ Clustering COVID-19 around the world with DBSCAN algorithm
     <td class="tg-0lax">26</td>
   </tr>
 </table>
-
-<p>The clusters are ordered by count of confirmed cases per million inhabitants after 2 weeks (descending). It also means that the average daily increase % is lower for the last few clusters. It is worth noting that the cluster number seems to correlate with GDP per capita and average temperature. It may indicate that fewer reported cases are result of smaller testing capacity in the poorer countries. Or that transmission rate depends on the climate. Further investigation is needed which effect is dominant - GDP or climate.</p>  
-<p>It is also worth noting that the distribution of daily increase % in the week 0 seems to be the most sparse. It tends converge for later weeks (week 1, week 2 etc.). In other words, the factor that makes the difference between the countries is the daily increase % in the early weeks.</p>
+<h4>Conculsions from the cluster table and the plots</h4>
+<p>The clusters are ordered by count of confirmed cases per million inhabitants after 2 weeks (descending). It also means that the average daily increase % is lower for the last few clusters. It is worth noting that the cluster number seems to correlate with GDP per capita and average temperature. It may indicate that fewer reported cases are result of smaller testing capacity in the poorer countries. Or that transmission rate depends on the climate. Further investigation is needed which effect is dominant and truly casual - GDP or climate. GDP is correlated with climate which must be taken into account.</p>
+<p> However, putting aside the GDP and climate correlations, this clustering method gives a few interesting insights such as the behaviour of Kuwait-Taiwan-Singapore cluster 9 or the differentation of Western European countries into a few different clusters of behaviour (clusters 0-2). </p>
+<p>It is also worth noting that the distribution of daily increase % in the week 0 seems to be the most sparse. It tends converge for later weeks (week 1, week 2 etc.). Typical value of daily grow % for week 1 is roughly 14% and typical value for week 2 is 10-11%.  In other words, the factor that makes the difference between the countries is the daily increase % in the early weeks.</p>
 <h2>3. Conclusions</h2>
 <ul>
 <li>different countries experience different daily increase % (growth rates) in various stages of the pandemic. The daily increase usually slows down after 2-3 weeks.</li>
-<li>many countries follow similar trajectories of the pandemic development. However different clusters of beaviour seem to correlate with GDP per capita and/or climate (???)</li>
+<li>many countries follow similar trajectories of the pandemic development. However different clusters of beaviour seem to correlate with GDP per capita and/or climate</li>
 <li>if the country didn’t slow down the exponential grow in the first week, the results are bad</li>
-<li>it is very hard to account for underreporting of coronavirus cases by analyzing only the confirmed cases data.</li>
+<li>behaviour of different countries during the pandemic can be clustered into a few patterns
+<li>it is very hard to account for underreporting of coronavirus cases by analyzing only the confirmed cases data (see the correlation with GDP)</li>
 </ul>
 <h2>4. Limitations</h2>
 <p>What are the limitations of this analysis?</p>
@@ -311,6 +297,25 @@ Bodies are being left in the streets in an overwhelmed Ecuadorian city</a>
 <li><a href="https://rmostowy.github.io/covid-19/prognoza-polska/" target="_blank">Pomiar i prognoza pandemii COVID-19 w Polsce w czasie rzeczywistym (in Polish)</a></li>
 </ul>
 
+<h2>5. Clustering - technical details</h2>
+<h3>What is clustering?</h3>
+<p>Clustering is an unsupervised machine learning technique. Clustering algorithm finds by itself groups (so called clusters) such that objects in one group are more similar to each other than to those in other groups. Here is a <a href="https://scikit-learn.org/stable/modules/clustering.html" target="_blank">good primer on clustering methods</a> from scikit-learn library.  </p>
+<p>Here are  typical results from a clustering algorithm which detected 3 clusters in the data (image source: <a href="https://scikit-learn.org/" target="_blank">scikit-learn</a>)</p>
+<img src="img/dbscan_scikit.png" alt="clustering example">
+<h3>Clustering methodology</h3>
+<p>I used DBSCAN clustering algorithm (more precisely <a href="https://scikit-learn.org/stable/modules/generated/sklearn.cluster.DBSCAN.html" target="_blank">the scikit-learn implemenation</a>). Each clustering algorithm needs either a vectorization of the records to be clustered or a definition of a distance between the records. I used the mean relative difference in logarithm of confirmed cases counts averaged over time. I also included a small addition for the mean relative difference in daily increase % averaged over time. The purpose is of such an addition is to favour clustering countries with similar dynamics of changes not only with similar counts. The most important hyperparameter in DBSCAN algorithm is the epsilon parameter - ε .  I chose the ε  by hand, trying to maximize the number of clusters and minimize the number of points outside any cluster. I tested about 5 different values of ε . I use minimum sample size=3.  DBSCAN has a known limitation of assuming a constant density of data points in all clusters. To overcome it I ran two additional clustering rounds:</p>
+<ul>
+<li>with ε/2 to divide the biggest clusters into smaller subclusters</li>
+<li>with 2ε  to additionally cluster noise points outside any cluster</li>
+</ul>
+<p>From all the countries in the world I kept 73 countries which have:</p>
+<ul>
+<li>population of at least 1 million</li>
+<li>reached at least 10 cases per million inhabitants at least 2 weeks ago</li>
+<li>more than 100 cases</li>
+</ul>
+
 <h4>Who am I?</h4>
-I am Aleksandra Chrabrowa and here is my <a href="https://www.linkedin.com/in/achrabrowa " target="_blank">LinkedIn profile</a>.
+<p>I am Aleksandra Chrabrowa and here is my <a href="https://www.linkedin.com/in/achrabrowa " target="_blank">LinkedIn profile</a>.</p>
+<p>You can contact me via e-mail at ok.l1m3k at gmail.com</p>
 </body>
