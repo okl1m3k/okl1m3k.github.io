@@ -68,7 +68,7 @@ Clustering COVID-19 around the world with DBSCAN algorithm
 <li>with ε /2 to divide the biggest clusters</li>
 <li>with 2 ε  to additionally cluster noise points outside any cluster</li>
 </ul>
-<p>From all the countries in the world I kept 65 countries which:</p>
+<p>From all the countries in the world I kept 73 countries which:</p>
 <ul>
 <li>population of at least 1 million</li>
 <li>have reached at least 10 cases per million inhabitants at least 2 weeks ago</li>
@@ -81,112 +81,171 @@ Clustering COVID-19 around the world with DBSCAN algorithm
 .tg  {border-collapse:collapse;border-spacing:0;}
 .tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
 .tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg .tg-ul38{text-align:left;vertical-align:top;position:sticky;position:-webkit-sticky;top:-1px;will-change:transform}
+.tg .tg-j1i3{border-color:inherit;text-align:left;vertical-align:top;position:sticky;position:-webkit-sticky;top:-1px;will-change:transform}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
 .tg .tg-0lax{text-align:left;vertical-align:top}
 </style>
 <table class="tg">
   <tr>
-    <th class="tg-0lax"><br>			cluster<br>		</th>
-    <th class="tg-0lax"><br>			countries<br>		</th>
-    <th class="tg-0lax"><br>			cluster description<br>		</th>
-    <th class="tg-0lax"><br>			mean GDP per capita ($) (nominal)<br>		</th>
-    <th class="tg-0lax"><br>			mean daily increase % week_0<br>		</th>
-    <th class="tg-0lax"><br>			mean daily increase % week_1<br>		</th>
-    <th class="tg-0lax"><br>			mean infected count per million<br>			week_0<br>		</th>
-    <th class="tg-0lax"><br>			mean infected count per million<br>			week_1<br>		</th>
+    <th class="tg-j1i3">cluster</th>
+    <th class="tg-j1i3">countries</th>
+    <th class="tg-j1i3">cluster description</th>
+    <th class="tg-j1i3">GDP per capita ($) (nominal)</th>
+    <th class="tg-j1i3">average yearly temperature (degree Celsius)</th>
+    <th class="tg-j1i3">daily increase % week_0</th>
+    <th class="tg-j1i3">daily increase % week_1</th>
+    <th class="tg-j1i3">daily increase % week_2</th>
+    <th class="tg-ul38">infected count per million week_0</th>
+    <th class="tg-ul38">infected count per million week_1</th>
+    <th class="tg-ul38">infected count per million week_2</th>
   </tr>
   <tr>
-    <td class="tg-0lax"><br>			outside cluster<br>		</td>
-    <td class="tg-0lax"><br>			Bahrain, China, Denmark, Estonia,<br>			Israel, Korea, South, Kuwait, Qatar, Singapore, Slovenia, Trinidad<br>			and Tobago, Uruguay, US<br>		</td>
-    <td class="tg-0lax"><br>			Noise points not belongig to any<br>			cluster<br>		</td>
-    <td class="tg-0lax"><br>			38553<br>		</td>
-    <td class="tg-0lax"><br>			38%<br>		</td>
-    <td class="tg-0lax"><br>			14%<br>		</td>
-    <td class="tg-0lax"><br>			79<br>		</td>
-    <td class="tg-0lax"><br>			255<br>		</td>
+    <td class="tg-0pky">outside cluster</td>
+    <td class="tg-0pky">Bahrain, China, Denmark, Djibouti, Estonia, Israel, Lebanon, Oman, Qatar, Slovenia, Trinidad and Tobago, US, Kosovo</td>
+    <td class="tg-0pky">noise points not belonging to any cluster</td>
+    <td class="tg-0pky">30331</td>
+    <td class="tg-0pky">17</td>
+    <td class="tg-0pky">38%</td>
+    <td class="tg-0pky">15%</td>
+    <td class="tg-0pky">10%</td>
+    <td class="tg-0lax">79</td>
+    <td class="tg-0lax">257</td>
+    <td class="tg-0lax">741</td>
   </tr>
   <tr>
-    <td class="tg-0lax"><br>			cluster 0<br>		</td>
-    <td class="tg-0lax"><br>			Austria, Portugal, Spain,<br>			Switzerland<br>		</td>
-    <td class="tg-0lax"><br>			Spain and alike. Countries with<br>			extremely high number of cases. Very high increases 40% in the<br>			week 0. Slowed down to 24% in week 1.<br>		</td>
-    <td class="tg-0lax"><br>			46682<br>		</td>
-    <td class="tg-0lax"><br>			40%<br>		</td>
-    <td class="tg-0lax"><br>			24%<br>		</td>
-    <td class="tg-0lax"><br>			79<br>		</td>
-    <td class="tg-0lax"><br>			352<br>		</td>
+    <td class="tg-0pky">cluster 0</td>
+    <td class="tg-0pky">Ireland, Norway, Turkey</td>
+    <td class="tg-0pky">extremely high increase in week 0 (43%) and quite efficient slowing down in week 1 (but still high - 19%)</td>
+    <td class="tg-0pky">54901</td>
+    <td class="tg-0pky">7</td>
+    <td class="tg-0pky">43%</td>
+    <td class="tg-0pky">19%</td>
+    <td class="tg-0pky">11%</td>
+    <td class="tg-0lax">92</td>
+    <td class="tg-0lax">309</td>
+    <td class="tg-0lax">658</td>
   </tr>
   <tr>
-    <td class="tg-0lax"><br>			cluster 1<br>		</td>
-    <td class="tg-0lax"><br>			Ireland, Norway, Turkey<br>		</td>
-    <td class="tg-0lax"><br>			Very similar to Spanish cluster.<br>			Very high increases in week 0. Slowing down in the week 1 more<br>			efficiently than cluster 0. <br>			<br>		</td>
-    <td class="tg-0lax"><br>			54901<br>		</td>
-    <td class="tg-0lax"><br>			43%<br>		</td>
-    <td class="tg-0lax"><br>			19%<br>		</td>
-    <td class="tg-0lax"><br>			92<br>		</td>
-    <td class="tg-0lax"><br>			309<br>		</td>
+    <td class="tg-0pky">cluster 1</td>
+    <td class="tg-0pky">Armenia, Australia, Austria, Belgium, Bosnia and Herzegovina, Chile, Croatia, Czechia, Finland, Germany, Lithuania, Moldova, Portugal, Romania, Serbia, Spain, Switzerland</td>
+    <td class="tg-0pky">High increases in week 0 (31%) followed by high increase in week 1 (18%) This is quite diverse cluster and cluster 2 and cluster 3 are subparts of it with more specific behaviour. However it contains a lot of Western European countries with moderate climate and quite high GDP</td>
+    <td class="tg-0pky">28674</td>
+    <td class="tg-0pky">9</td>
+    <td class="tg-0pky">31%</td>
+    <td class="tg-0pky">18%</td>
+    <td class="tg-0pky">13%</td>
+    <td class="tg-0lax">59</td>
+    <td class="tg-0lax">203</td>
+    <td class="tg-0lax">518</td>
   </tr>
   <tr>
-    <td class="tg-0lax"><br>			cluster 2<br>		</td>
-    <td class="tg-0lax"><br>			Belgium, Canada, France, Italy,<br>			Netherlands, Panama, United Kingdom<br>		</td>
-    <td class="tg-0lax"><br>			Italy and similar. Slightly slower<br>			than Spain but still the average growth in week 0 was 29%<br>		</td>
-    <td class="tg-0lax"><br>			39390<br>		</td>
-    <td class="tg-0lax"><br>			29%<br>		</td>
-    <td class="tg-0lax"><br>			22%<br>		</td>
-    <td class="tg-0lax"><br>			46<br>		</td>
-    <td class="tg-0lax"><br>			184<br>		</td>
+    <td class="tg-0pky">cluster 2</td>
+    <td class="tg-0pky">Canada, France, Italy, Netherlands, Panama, United Kingdom</td>
+    <td class="tg-0pky">High increases in week 0 (29%) not slowed down much in week 1 (22%). High GDP (Western Europe mostly) and moderate climate</td>
+    <td class="tg-0pky">38426</td>
+    <td class="tg-0pky">10</td>
+    <td class="tg-0pky">29%</td>
+    <td class="tg-0pky">22%</td>
+    <td class="tg-0pky">15%</td>
+    <td class="tg-0lax">46</td>
+    <td class="tg-0lax">182</td>
+    <td class="tg-0lax">482</td>
   </tr>
   <tr>
-    <td class="tg-0lax"><br>			cluster 3<br>		</td>
-    <td class="tg-0lax"><br>			Armenia, Australia, Bosnia and<br>			Herzegovina, Chile, Croatia, Czechia, Finland, Germany, Lithuania,<br>			Moldova, Romania, Serbia<br>		</td>
-    <td class="tg-0lax"><br>			Countries similar to cluster 1 and 2<br>			but with no such sharp distinction from the others.<br>		</td>
-    <td class="tg-0lax"><br>			21296<br>		</td>
-    <td class="tg-0lax"><br>			29%<br>		</td>
-    <td class="tg-0lax"><br>			16%<br>		</td>
-    <td class="tg-0lax"><br>			54<br>		</td>
-    <td class="tg-0lax"><br>			154<br>		</td>
+    <td class="tg-0pky">cluster 3</td>
+    <td class="tg-0pky">Dominican Republic, Ecuador, Iran, Latvia, Mauritius, New Zealand, North Macedonia, Sweden</td>
+    <td class="tg-0pky">Extremely high incease in week 0 (36%) slowed down more efficiently to 12%. Much lower GDP than cluster 2 and 1</td>
+    <td class="tg-0pky">18611</td>
+    <td class="tg-0pky">14</td>
+    <td class="tg-0pky">36%</td>
+    <td class="tg-0pky">12%</td>
+    <td class="tg-0pky">8%</td>
+    <td class="tg-0lax">68</td>
+    <td class="tg-0lax">152</td>
+    <td class="tg-0lax">266</td>
   </tr>
   <tr>
-    <td class="tg-0lax"><br>			cluster 4<br>		</td>
-    <td class="tg-0lax"><br>			Dominican Republic, Ecuador, Iran,<br>			Latvia, Mauritius, New Zealand, North Macedonia, Sweden<br>		</td>
-    <td class="tg-0lax"><br>			Very fast daily increase in the week<br>			0 - 36%. Slowed down a lot in the week 1. Perhaps due to lower<br>			testing capacity.<br>		</td>
-    <td class="tg-0lax"><br>			18611<br>		</td>
-    <td class="tg-0lax"><br>			36%<br>		</td>
-    <td class="tg-0lax"><br>			12%<br>		</td>
-    <td class="tg-0lax"><br>			68<br>		</td>
-    <td class="tg-0lax"><br>			152<br>		</td>
+    <td class="tg-0pky">cluster 4</td>
+    <td class="tg-0pky">Greece, Korea, South, Uruguay</td>
+    <td class="tg-0pky">High increase in week 0 (28%) followed by slowing down to 12%</td>
+    <td class="tg-0pky">22811</td>
+    <td class="tg-0pky">15</td>
+    <td class="tg-0pky">28%</td>
+    <td class="tg-0pky">12%</td>
+    <td class="tg-0pky">5%</td>
+    <td class="tg-0lax">48</td>
+    <td class="tg-0lax">105</td>
+    <td class="tg-0lax">140</td>
   </tr>
   <tr>
-    <td class="tg-0lax"><br>			cluster 5<br>		</td>
-    <td class="tg-0lax"><br>			Bulgaria, Costa Rica, Greece,<br>			Hungary, Malaysia, Poland, Saudi Arabia, Slovakia<br>		</td>
-    <td class="tg-0lax"><br>			Mostly Central Eastern Europe<br>			cluster. Consistently slower daily increases (21% and 10%) than<br>			Western&nbsp;&nbsp;Europe.<br>		</td>
-    <td class="tg-0lax"><br>			15927<br>		</td>
-    <td class="tg-0lax"><br>			21%<br>		</td>
-    <td class="tg-0lax"><br>			10%<br>		</td>
-    <td class="tg-0lax"><br>			33<br>		</td>
-    <td class="tg-0lax"><br>			67<br>		</td>
+    <td class="tg-0pky">cluster 5</td>
+    <td class="tg-0pky">Azerbaijan, Bulgaria, Costa Rica, Hungary, Malaysia, Poland, Saudi Arabia, Slovakia, Tunisia</td>
+    <td class="tg-0pky">A lot of Central Eastern European countries and countries with warm climate. Countries started slower from the beginning (21%) and decreased to 10% in week 1. Moderate average GDP.</td>
+    <td class="tg-0pky">12824</td>
+    <td class="tg-0pky">16</td>
+    <td class="tg-0pky">21%</td>
+    <td class="tg-0pky">10%</td>
+    <td class="tg-0pky">6%</td>
+    <td class="tg-0lax">33</td>
+    <td class="tg-0lax">65</td>
+    <td class="tg-0lax">94</td>
   </tr>
   <tr>
-    <td class="tg-0lax"><br>			cluster 6<br>		</td>
-    <td class="tg-0lax"><br>			Albania, Brazil, Lebanon, Peru,<br>			United Arab Emirates<br>		</td>
-    <td class="tg-0lax"><br>			Countries with warm climate.<br>			Consistently slower daily increases (14% and 15%) with little<br>			slowing down between week 0 and week 1.<br>		</td>
-    <td class="tg-0lax"><br>			13723<br>		</td>
-    <td class="tg-0lax"><br>			14%<br>		</td>
-    <td class="tg-0lax"><br>			15%<br>		</td>
-    <td class="tg-0lax"><br>			22<br>		</td>
-    <td class="tg-0lax"><br>			58<br>		</td>
+    <td class="tg-0pky">cluster 6</td>
+    <td class="tg-0pky">Albania, Brazil, Peru, United Arab Emirates</td>
+    <td class="tg-0pky">Countries which kept the increase at around 14% for 3 weeks.&nbsp;&nbsp;Warm climate.</td>
+    <td class="tg-0pky">14741</td>
+    <td class="tg-0pky">21</td>
+    <td class="tg-0pky">14%</td>
+    <td class="tg-0pky">15%</td>
+    <td class="tg-0pky">13%</td>
+    <td class="tg-0lax">22</td>
+    <td class="tg-0lax">60</td>
+    <td class="tg-0lax">167</td>
   </tr>
   <tr>
-    <td class="tg-0lax"><br>			cluster 7<br>		</td>
-    <td class="tg-0lax"><br>			Georgia, Jordan, Oman, Thailand,<br>			West Bank and Gaza<br>		</td>
-    <td class="tg-0lax"><br>			Countries with warm climate.<br>			Consistently slower daily increases (13% and 8%) with slowing down<br>			between week 0 and week 1.<br>		</td>
-    <td class="tg-0lax"><br>			7491<br>		</td>
-    <td class="tg-0lax"><br>			13%<br>		</td>
-    <td class="tg-0lax"><br>			8%<br>		</td>
-    <td class="tg-0lax"><br>			20<br>		</td>
-    <td class="tg-0lax"><br>			34<br>		</td>
+    <td class="tg-0pky">cluster 7</td>
+    <td class="tg-0pky">Argentina, Jordan, South Africa, Thailand</td>
+    <td class="tg-0pky">Similar start to cluster 6 (15%) with slowing down in week 1. Warm climate.</td>
+    <td class="tg-0pky">7041</td>
+    <td class="tg-0pky">19</td>
+    <td class="tg-0pky">15%</td>
+    <td class="tg-0pky">5%</td>
+    <td class="tg-0pky">NaN</td>
+    <td class="tg-0lax">22</td>
+    <td class="tg-0lax">32</td>
+    <td class="tg-0lax">NaN</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">cluster 8</td>
+    <td class="tg-0lax">Georgia, Japan, West Bank and Gaza</td>
+    <td class="tg-0lax">Countries which kept the increase at around 9% for 3 weeks. Very diverse economically</td>
+    <td class="tg-0lax">16111</td>
+    <td class="tg-0lax">13</td>
+    <td class="tg-0lax">9%</td>
+    <td class="tg-0lax">9%</td>
+    <td class="tg-0lax">9%</td>
+    <td class="tg-0lax">17</td>
+    <td class="tg-0lax">32</td>
+    <td class="tg-0lax">52</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">cluster 9</td>
+    <td class="tg-0lax">Kuwait, Singapore, Taiwan*</td>
+    <td class="tg-0lax">High GDP countries with warm climate. Managed to keep extremely small increases for 3 weeks (3-6%)</td>
+    <td class="tg-0lax">39360</td>
+    <td class="tg-0lax">25</td>
+    <td class="tg-0lax">6%</td>
+    <td class="tg-0lax">3%</td>
+    <td class="tg-0lax">6%</td>
+    <td class="tg-0lax">13</td>
+    <td class="tg-0lax">17</td>
+    <td class="tg-0lax">26</td>
   </tr>
 </table>
 
-<p>The clusters are ordered by count of confirmed cases per million inhabitants after 2 weeks (descending). It also means that the average daily increase % is lower for the last few clusters. It is worth noting that the cluster number seems to correlate with GDP per capita. It may indicate that fewer reported cases are result of smaller testing capacity in the poorer countries.  However, there also seems to some correlation with climate. Further clusters tend to contain warmer countries.
+<p>The clusters are ordered by count of confirmed cases per million inhabitants after 2 weeks (descending). It also means that the average daily increase % is lower for the last few clusters. It is worth noting that the cluster number seems to correlate with GDP per capita and average temperature. It may indicate that fewer reported cases are result of smaller testing capacity in the poorer countries. Or that transmission rate depends on the climate.  
 It is also worth noting that the distribution of daily increase % in the week 0 seems to be the most sparse. It tends converge for later weeks (week 1, week 2 etc.).</p>
 <h2>3. Conclusions</h2>
 <ul>
