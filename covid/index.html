@@ -1,12 +1,18 @@
-<h1>COVID pandemic around the world<br/>
-Clustering behaviour in different countries with DBSCAN algorithm</h1>
+<head>
+  <title>Clustering COVID-19 around the world with DBSCAN algorithm</title>
+</head>
+
+<body>
+<h1>
+Clustering COVID-19 around the world with DBSCAN algorithm
+</h1>
 
 
 <h2>1. Introduction</h2>
 <ul>
 <li>
 <i>What data was analyzed?</i>
-<p>I analyzed time series of confirmed COVID cases in different countries around the world. For (almost) every country in the world I had a list of dates and count of coronavirus cases confirmed by the test outcome.  I used the data from Kaggle <a href="https://www.kaggle.com/sudalairajkumar/novel-corona-virus-2019-dataset" target="_blank">Novel Corona Virus 2019 Dataset</a> with addition of more detailed data for Poland (from <a href="https://kwirus.pl/" target="_blank">KWIRUS.pl</a>) and some statistical data (GDP, population, population density) from Wikipedia.</p>
+<p>I analyzed time series of confirmed COVID-19 cases in different countries around the world. For (almost) every country in the world I had a list of dates and count of coronavirus cases confirmed by the test outcome.  I used the data from Kaggle <a href="https://www.kaggle.com/sudalairajkumar/novel-corona-virus-2019-dataset" target="_blank">Novel Corona Virus 2019 Dataset</a> with addition of more detailed data for Poland (from <a href="https://kwirus.pl/" target="_blank">KWIRUS.pl</a>) and some statistical data (GDP, population, population density) from Wikipedia.</p>
 </li>
 <li>
 <i>What is the purpose of this analysis?</i>
@@ -19,6 +25,7 @@ Clustering behaviour in different countries with DBSCAN algorithm</h1>
 </ul>
 <h2>2. The analysis</h2>
 <h3>2.1 Italy – analyzing one country</h3>
+<img src="img/Italy_covid.png" alt="COVID-19 in Italy">
 <p>Here are 4 plots that are basic tools of analysis of confirmed cases for a given country. In this cases it is Italy. Italy was the first country in Europe to have a major coronavirus outbreak. The first 2 plots in the upper row are just standard time series of cumulative number of cases (left) and daily new cases (right). The scale is linear. The exponential grow makes it difficult to show more details. However, the daily new cases (right) has started to decline a few days ago – the peak is clearly visible.</p> 
 <p>The biggest plot (second row) shows the same data as the plot on the left but has logarithmic scale. In order not to analyze noise I choose as the beginning of pandemic (day 0) the day the cumulative number of cases was 100 or above. This is quite standard approach accross many analysis which can be found online.</p>
 <p>There are a few straight lines fitted to the curve. Each line represents an exponential function with different parameters. It seems that:</p>
@@ -33,6 +40,7 @@ Clustering behaviour in different countries with DBSCAN algorithm</h1>
 <h3>2.2 Comparing selected countries</h3>
 <p>The next step of the analysis was comparing multiple countries together on one plot. I selected a few countries (China, Italy, Spain, US etc.) which have been making headlines recently and my home country – Poland. For China I restricted data to Hubei province, for the US – to New York state.
 </p>
+<img src="img/world_covid.png" alt="COVID-19 around the world">
 <p>Here are the major countries plotted together. I made a few changes to the plots which make the visulization nicer and easier to look at:</p>
 <ul>
 <li>normalizing the confirmed cases by the population of a given country/region – the y axis is now count per million inhabitants</li>
@@ -53,7 +61,7 @@ Clustering behaviour in different countries with DBSCAN algorithm</h1>
 <h4>What is clustering?</h4>
 <p>Clustering is an unsupervised machine learning technique. Clustering algorithm finds by itself groups (so called clusters) of records such that objects in one group are more similar to each other than to those in other groups. Here is a <a href="https://scikit-learn.org/stable/modules/clustering.html" target="_blank">good primer on clustering methods</a> from scikit-learn library.  </p>
 <p>Here are  typical results from a clustering algorithm which detected 3 clusters in the data (image source: <a href="https://scikit-learn.org/" target="_blank">scikit-learn</a>)</p>
-
+<img src="img/dbscan_scikit.png" alt="clustering example">
 <h4>Clustering methodology</h4>
 <p>I used DBSCAN clustering algorithm (more precisely <a href="https://scikit-learn.org/stable/modules/generated/sklearn.cluster.DBSCAN.html" target="_blank">the scikit-learn implemenation</a>). Each clustering algorithm needs either a vectorization of the records to be clustered or a definition of a distance between the records. I used the mean relative difference in logarithm confirmed cases counts averaged over time. I also added a small addition for the mean relative difference in daily increase % averaged over time. The purpose is of such an addition is to favour clustering countries with similar dynamics of changes not only similar counts. The most important hyperparameter in DBSCAN algorithm is the epsilon parameter - ε .  I chose the ε  by hand, trying to maximize the number of clusters and minimize the number of points outside any cluster. I tested about 5 different values of ε . I use minimum sample size=3.  DBSCAN has a known limitation of assuming a constant density of data points in all clusters. To overcome it I run two additional clustering rounds:</p>
 <ul>
@@ -67,6 +75,8 @@ Clustering behaviour in different countries with DBSCAN algorithm</h1>
 <li>have more than 100 cases</li>
 </ul>
 <h4>Clustering results</h4>
+<p>Here are the clustering results. The first plots are the as the previous plots comparing different countries. This time the lines with the same color correspond to the countries in the same cluster. Below the plots there is a table with basic information about every cluster.</p>
+<img src="img/cluster_covid.png" alt="clustering example">
 <style type="text/css">
 .tg  {border-collapse:collapse;border-spacing:0;}
 .tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
@@ -177,7 +187,7 @@ Clustering behaviour in different countries with DBSCAN algorithm</h1>
 </table>
 
 <p>The clusters are ordered by count of confirmed cases per million inhabitants after 2 weeks (descending). It also means that the average daily increase % is lower for the last few clusters. It is worth noting that the cluster number seems to correlate with GDP per capita. It may indicate that fewer reported cases are result of smaller testing capacity in the poorer countries.  However, there also seems to some correlation with climate. Further clusters tend to contain warmer countries.
-It is also worth noting that the distribution of daily increase % in the week 0 seems to be the most sparse. It tends converge for later weeks (week 1, week 2 etc.)</p>
+It is also worth noting that the distribution of daily increase % in the week 0 seems to be the most sparse. It tends converge for later weeks (week 1, week 2 etc.).</p>
 <h2>3. Conclusions</h2>
 <ul>
 <li>different countries experience different daily increase % (growth rates) in various stages of the pandemic. The daily increase usually slows down after 2-3 weeks.</li>
@@ -230,3 +240,4 @@ Bodies are being left in the streets in an overwhelmed Ecuadorian city</a>
 
 <h4>Who am I?</h4>
 I am Aleksandra Chrabrowa and here is my <a href="https://www.linkedin.com/in/achrabrowa " target="_blank">LinkedIn profile</a>.
+</body>
