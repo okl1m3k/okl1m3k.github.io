@@ -1,0 +1,153 @@
+<html>
+<head>
+  <title>The Lotttery Ticket Hypothesis</title>
+  <meta data-rh="true" property="og:site_name" content="GitHub Pages">
+  <meta data-rh="true" property="og:title" content="Clustering COVID-19 around the world with DBSCAN algorithm">
+  <meta data-rh="true" property="og:type" content="article">
+  <meta data-rh="true" property="og:image" content="https://okl1m3k.github.io/covid/img/cluster_covid.png">
+  <meta name="thumbnail" content="https://okl1m3k.github.io/covid/img/cluster_covid.png" />
+  <meta data-rh="true" property="og:description" content="I analyzed time series of confirmed COVID-19 cases in different countries around the world. I clustered time series for countries with DBSCAN algorithm. In this way I extracted several groups of patterns followed by different countries.">
+  <meta data-rh="true" property="og:url" content="https://okl1m3k.github.io/covid/">
+</head>
+
+<body>
+<h1>
+The Lotttery Ticket Hypothesis
+</h1>
+<h2>
+Pruning – historical context
+</h2>
+<p>
+The lottery ticket hypothesis uses a 30-year-old concept (LeCun et al. 1990) from training DNNs (deep neural
+networks) – pruning. Pruning is applied at the end of training by setting the lowest weights in the DNN to 0.
+Typically, pruning can reduce the number of parameters by orders of magnitude without compromising accuracy.
+Pruning has long been considered a standard approach for DNN compression. Apart from some refinements – for
+example variations of structured pruning there have been no substantial changes in the key concepts related to
+pruning until now.
+</p>
+<h2>
+Introduction of the Lottery Ticket Hypothesis
+</h2>
+<p>
+It has long been believed that pruning is only a post-processing step and that pruned networks cannot be trained
+from scratch. Recently a new idea emerged that not only takes pruning one step futher but also changes our
+understanding of the most fundamental aspects of DNNs training. It is lottery ticket hypothesis (Frankle, Carbin
+2019). It turns out, that pruned networks can be so called winning tickets. Such winning tickets can be trained
+from scratch and achieve the same or better performance as the original network. The only condition is that the
+original initialization of remaining weights is not changed. The combination of pruning mask and lucky initial
+weights is essential to the success of of a winning ticket. The winning tickets we find have won the initialization
+lottery: their connections have initial weights that make training particularly effective. (Frankle, Carbin 2019)
+</p>
+<h2>Essential papers</h2>
+<p>
+There are 4 papers that describe the essential work related to the lottery ticket hypothesis, all released in short time
+frame. The first 2 are written from MIT, the other 2 are form Facebook.
+</p>
+<ol>
+<li>The Lottery Ticket Hypothesis: Finding Sparse, Trainable Neural Networks – Frankle, Carbin, 2019. This
+paper introduces the lottery ticket hypothesis for the first time. Winning lottery tickets are efficiently
+found only for smaller networks. Image datasets only.</li>
+<li>Stabilizing the Lottery Ticket Hypothesis – Frankle, Dziugaite et al., 2019. Adds some refinements to the
+procedure of obtaining winning tickets for larger networks. Image datasets only.</li>
+<li>One ticket to win them all: generalizing lottery ticket hypothesis initializations across datasets and
+optimizers – Morcos, Yu et al., 2019. Explores the idea of transferring winning tickets obtained with one
+training configuration (optimizer and dataset) to another. Image datasets only.</li>
+<li>Playing the lottery with rewards and multiple languages: lottery tickets in RL and NLP – Yu, Edunov et
+al., 2020. First winning tickets in RL and NLP domains. Review of various techniques of finding the
+winning tickets.</li>
+</ol>
+<p>
+These 4 papers are an interesting example of how a new research idea develops in a series of followup papers. The
+rest of the article describes the relation between the ideas in these 4 papers.
+</p>
+<h2>The Lottery Ticket Hypothesis tricks of trade – a glossary</h2>
+<p>Lottery ticket hypothesis is still work in progress. Substantial computational resources needed for experiments
+slow down the work. Optimal strategies for generating winning tickets are determined in multiple papers. Below
+is a glossary of key concepts, ordered as they were introduced.</p>
+<ul>
+<li>winning ticket – a subnetwork obtained after pruning. The weights that remain in the winning ticket are
+reset to the exactly same values as in the original initialization for the original training during which the
+pruning was performed.</li>
+<li>
+random ticket – a subnetwork obtained after pruning. In contrast to winning tickets, random tickets
+weights are randomly reinitialized and are different from the original training.</li>
+</ul>
+<p>Usage: All 4 papers examine winning and random tickets. Authors agree that winning tickets outperform random
+tickets. However, sometimes winning tickets are hard to find.</p>
+<ul>
+<li>one-shot pruning - the simplest pruning approach. The network is trained only once and then the desired
+fraction of weights is pruned.</li>
+<li>iterative pruning – repetitive training, pruning a small fraction of weights, and resetting the DNN until
+the desired fraction of weights is pruned. Computationally expensive.</li></ul>
+<p>Usage: Iterative pruning was first used by Frankle, Carbin (2019): ... iterative pruning finds winning tickets that
+match the accuracy of the original network at smaller sizes than does one-shot pruning. All 4 papers use iterative
+pruning and confirm its advantage over one-shot pruning.</p>
+<ul>
+<li>global pruning – pruning the desired fraction of the lowest weights across all the layers. Different layers
+may be pruned to a different degree. This is opposed to local pruning, where a set fraction of lowest
+weights is pruned from each layer separately.</li></ul>
+<p>Usage: Global pruning is used by Frankle, Carbin (2019) for larger DNNs, whereas local pruning is used for
+smaller DNNs. Global pruning is essential for Morcos, Yu et al. (2019). It is also used by Yu, Edunov et al. (2019).</p>
+<ul><li>learning rate warmup – starting the training with lower learning rate and lineary increasing it to the
+benchmark value while generating winning tickets.</li></ul>
+<p>Usage: This was necessary for Frankle, Carbin (2019) for large DNNs (Resent-18 and VGG-19) but was not
+deemed satisfactory due to tricky hyperparameter tweaking. Replaced by late rewinding.</p>
+<ul><li>late rewinding – a modified way of generating winning tickets. The weights remaining after pruning are
+set to the values at some early training iteration are chosen (typically between 0.1%-7% training progress)
+instead of iteration 0.</li></ul>
+<p>Usage: It was first examined by Frankle, Dziugaite et al. (2019). It enabled finding winning tickets for large
+DNNs (for example Resnet-50), eliminated the need for learning rate warmup and allowed pruning more weights.
+The importance of late rewinding was confirmed by Morcos, Yu et al. (2019). Later Yu, Edunov et al. (2019)
+stated that late rewinding improved performance but was not essential.</p>
+<p>To sum up, best practices for generating winning tickets are an active area of research. Iterative pruning and
+rigorously examining all pruning parameters are the major computational bottlenecks. It seems that the basic
+methodology for generating winning tickets has emerged over time.</p>
+<h2>Transferring winning tickets</h2>
+<p>Winning tickets are costly to find. Discovering them gave us better understanding of fundamental concepts related
+to DNNs. But are there any practical implications? Pruning has simple practical application – DNN compression.
+What is the advantage of finding a small subnetwork that can be successfully trained from scratch if in order to do
+so the full network must be trained beforehand?</p>
+<p>
+Morcos, Yu et al. (2019) seem to have an answer for that. They introduce winning ticket transfer – finding
+winning ticket for one training configuration (optimizer, dataset) and using it to train a DNN with the same
+architecture but different configuration. The results are good in particular when transferring from larger datasets
+to smaller. This opens new opportunities for transfer learning - transferring optimal (pruned) initializations of
+large DNNs from larger datasets to smaller datasets.<p>
+<h2>Summary</h2>
+<p>4 papers described above are an interesting example of how a good idea develops. At first preeliminary results in
+carefully selected environment are presented – smaller DNNs, only image domain (Frankle, Carbin 2019).
+Gradually, technical details take its final shape (Frankle, Dziugaite et al. 2019; Morcos, Yu et al. 2019; Yu,
+Edunov et al. 2020) and the idea is transferred to other domains – NLP, RL. Practical applications are discovered –
+winning ticket transfer (Morcos, Yu et al. 2019). It is definitely beneficial to publish some early stage of your
+work (if your idea is good enough).</p>
+<p>What remains to be done? Let the authors (Frankle, Carbin 2019) voice their concerns: Sparse pruning is our only
+method for finding winning tickets. Although we reduce parameter-counts, the resulting pruning architectures are
+not optimized for modern libraries or hardware. In future work, we intend to study other pruning methods from
+extensive contemporary literature, such as structured pruning (which would produce networks optimized for
+contemporary hardware) and non-magnitude pruning methods (which could produce smaller winning tickets or
+find them earlier).</p>
+<h2>References</h2>
+<ol>
+<li>Jonathan Frankle and Michael Carbin. The lottery ticket hypothesis: Finding sparse, trainable neural
+networks. In International Conference on Learning Representations, 2019. URL
+http://arxiv.org/abs/1803.03635.</li>
+<li>Jonathan Frankle, Gintare Karolina Dziugaite, Daniel M Roy, and Michael Carbin. Stabilizing the Lottery
+Ticket Hypothesis. March 2019. URL http://arxiv.org/abs/1903.01611v2.
+</li>
+<li>Yann LeCun, John S Denker, and Sara A Solla. Optimal brain damage. In Advances in neural information
+processing systems, 1990. 598–605.</li>
+<li>Ari S. Morcos, Haonan Yu, Michela Paganini, Yuandong Tian. One ticket to win them all: generalizing
+lottery ticket initializations across datasets and optimizers. In Conference on Neural Information
+Processing Systems, 2019. URL https://arxiv.org/abs/1906.02773.</li>
+<li>Haonan Yu, Sergey Edunov, Yuandong Tian, Ari S. Morcos. Playing the lottery with rewards and multiple
+languages: lottery tickets in RL and NLP. In International Conference on Learning Representations, 2020</li>
+</ol>
+
+<h4>Who am I?</h4>
+<p>I am Aleksandra Chrabrowa and here is my <a href="https://www.linkedin.com/in/achrabrowa " target="_blank">LinkedIn profile</a>.</p>
+<p>You can contact me via e-mail at ok.l1m3k at gmail.com</p>
+<p>
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+</p>
+</body>
+</html>
