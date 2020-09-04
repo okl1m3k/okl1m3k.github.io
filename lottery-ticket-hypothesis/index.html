@@ -15,7 +15,7 @@
 The Lottery Ticket Hypothesis - essential papers
 </h1>
 <p>
-The Lottery Ticket Hypothesis has recently been a hot topic in deep learning community. In this article, I review 4 essential papers related to the Lottery Ticket Hypothesis. Let us take a closer look step by step how the Lottery Ticket Hypothesis was developed.
+The Lottery Ticket Hypothesis has recently been a hot topic in deep learning community. In this article, I review 4 essential papers related to the Lottery Ticket Hypothesis. Let us take a closer look step by step what is the Lottery Ticket Hypothesis, how it was developed, and why it is important.
 </p>
 <h2>
 Pruning – historical context
@@ -50,10 +50,10 @@ from scratch and achieve the same or better performance as the original network.
 weights is essential to the success of a winning ticket. <i>The winning tickets we find have won the initialization
 lottery: their connections have initial weights that make training particularly effective.</i> (Frankle, Carbin 2019 [1])
 </p>
-<p> Take a look at the picture below to see how winning and random lottery tickets are created from pruned DNNs. The definition of random lottery tickets will be introduced below.
+<p> Take a look at the picture below to see how winning and random lottery tickets are created from pruned DNNs. The definition of random lottery tickets will be introduced later.
 <figure>
 <img src="img/tickets.png" alt="winning vs random lottery ticket" width="100%">
-<figcaption>The process of creating winning and random lottery tickets from pruned DNNs. The definition of random lottery tickets will be introduced below. Image by Aleksandra Chrabrowa.</figcaption>
+<figcaption>The process of creating winning and random lottery tickets from pruned DNNs. The definition of random lottery tickets will be introduced later. Image by Aleksandra Chrabrowa.</figcaption>
 </figure>
 <h2>Essential papers</h2>
 <p>
@@ -116,8 +116,19 @@ DNNs (for example Resnet-50), eliminated the need for learning rate warmup, and 
 The importance of late rewinding was confirmed by Morcos, Yu, et al. (2019) [4]. Later Yu, Edunov, et al. (2020) [5]
 stated that late rewinding improved performance but was not essential.</p>
 <p>To sum up, best practices for generating winning tickets are an active area of research. Iterative pruning and
-rigorously examining all pruning parameters are the major computational bottlenecks. It seems that the basic
+rigorously examining all pruning parameters are the major computational bottlenecks. However, it seems that the basic
 methodology for generating winning tickets has emerged over time.</p>
+<h2>One plot explains it all</h2>
+<p>
+Papers often begin with one plot that presents the most important results of the conducted research and that authors wish to be the main take-home message of the paper. Let us look at the first plot in the first paper about the Lottery Ticket Hypothesis - Frankle, Carbin (2019) [1].
+</p>
+<figure>
+<img src="img/figure_1.png" alt="Figure 1" width="100%">
+<figcaption>Figure 1 from Frankle, Carbin (2019) [1]. <i>The iteration at which early-stopping would occur (left) and the test accuracy at that iteration (right) of the Lenet architecture for MNIST and the Conv-2, Conv-4, and Conv-6 architectures for CIFAR10 (see Figure 2) when trained starting at various sizes. Dashed lines are randomly sampled sparse networks (average of ten trials). Solid lines are winning tickets (average of five trials).</i> Take-home message: winning tickets <i>match the test accuracy of the original network after training for at most the same number of iterations.</i>[1]
+</figcaption>
+</figure>
+<p>Figure 1 from Frankle, Carbin (2019) [1] compares the performance of winning and random tickets as a function percent of weights remaining after pruning. For each experiment, both curves have a common starting point at 100% of weights remaining (left side of the plots). This is because 100% of weights remaining means no pruning. If there is no pruning, winning and random tickets are equivalent. However, as the pruning rate increases, the behaviour of winning and random tickets diverge. In particular, training time (proportional to early stopping iteration  - plotted on the first two charts) remains almost constant until the percent of weights remaining is as low as 5-10%, with a flat minimum somewhere in the middle. As training time remains constant or even slightly better, the accuracy does not suffer much - the solid curves on the last two charts are almost flat until quite high pruning rates.</p>
+<p>We can generate winning tickets which have only 5-10% of weights and almost the same accuracy!</p>
 <h2>Transferring winning tickets</h2>
 <p>Winning tickets are costly to find. Discovering them gave us a better understanding of fundamental concepts related
 to DNNs. But are there any practical implications? Pruning has a simple practical application – DNN compression.
@@ -136,7 +147,7 @@ Gradually, technical details take its final shape (Frankle, Dziugaite et al. 201
 Edunov et al. 2020 [5]) and the idea is transferred to other domains – NLP, RL. Practical applications are discovered –
 winning ticket transfer (Morcos, Yu et al. 2019 [4]). It is beneficial to publish some early stages of your
 work (if your idea is good enough).</p>
-<p>On the other hand, this rapid process of development of the Lottery Ticket Hypothesis makes it a little bit convoluted to get a gist of the story from multiple papers. Fun fact: look at Frankle, Dziugaite et al. 2019 [2] - this paper has multiple versions and it even changed title once.</p>
+<p>On the other hand, this rapid process of development of the Lottery Ticket Hypothesis makes it a little bit convoluted to get a gist of the story from multiple papers. Fun fact: look at Frankle, Carbin 2019 [1] or Frankle, Dziugaite et al. 2019 [2] - these papers have between 3-5 versions and each of them changed the title once.</p>
 <p>What remains to be done? Let the authors (Frankle, Carbin 2019 [1]) voice their concerns: <i>Sparse pruning is our only
 method for finding winning tickets. Although we reduce parameter-counts, the resulting pruning architectures are
 not optimized for modern libraries or hardware... In future work, we intend to study other pruning methods from
