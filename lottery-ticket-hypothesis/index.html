@@ -21,20 +21,20 @@ The Lottery Ticket Hypothesis has recently been a hot topic in deep learning com
 Pruning – historical context
 </h2>
 <p>
-The Lottery Ticket Hypothesis uses a 30-year-old concept (LeCun et al. 1990 [3]) from training DNNs (deep neural
-networks) – pruning. Pruning is applied at the end of training by setting a given % (typically it can be 90% or 99%) of the lowest weights in the DNN to 0. The assumption is that the lowest weights play little role in the network.</p>
+The Lottery Ticket Hypothesis uses a 30-year-old concept (LeCun et al. 1990 [3]) from training NNs (neural
+networks) – pruning. Pruning is applied at the end of training by setting a given % (typically it can be 90% or 99%) of the lowest weights in the NN to 0. The assumption is that the lowest weights play little role in the network.</p>
 <p>
-After pruning the DNN (which now consists of sparse matrices) can still be used for inference, just like the initial trained DNN with all the weights.
+After pruning the NN (which now consists of sparse matrices) can still be used for inference, just like the initial trained NN with all the weights.
 Typically, pruning can reduce the number of parameters by orders of magnitude without compromising the accuracy too much.
 </p>
 <p>
-Pruning has long been considered a standard approach for DNN compression after the training process. Apart from some refinements – for
+Pruning has long been considered a standard approach for NN compression after the training process. Apart from some refinements – for
 example, variations of structured pruning, there have been no substantial changes in the key concepts related to
-pruning until now. The picture below shows the process of training and pruning a DNN.
+pruning until now. The picture below shows the process of training and pruning a NN.
 </p>
 <figure>
 <img src="img/pruning.png" alt="pruning" width="100%">
-<figcaption>The process of training and pruning DNNs. Image by Aleksandra Chrabrowa.</figcaption>
+<figcaption>The process of training and pruning neural networks (NNs). Image by Aleksandra Chrabrowa.</figcaption>
 </figure>
 <h2>
 Introduction of the Lottery Ticket Hypothesis
@@ -42,7 +42,7 @@ Introduction of the Lottery Ticket Hypothesis
 <p>
 It has long been believed that pruning is only a post-processing step and that pruned networks cannot be trained
 from scratch. Recently a new idea emerged that not only takes pruning one step further but also changes our
-understanding of the most fundamental aspects of DNNs training. It is the Lottery Ticket Hypothesis (Frankle, Carbin
+understanding of the most fundamental aspects of NN training. It is the Lottery Ticket Hypothesis (Frankle, Carbin
 2019 [1]).</p>
 <p>
 It turns out, that pruned networks can be used to create so-called winning tickets. Simply, we take the pruned network and change the non-zero weights back to their original random initializations from the beginning of the training process. The resulting network is called the winning ticket. Such winning tickets can be later trained
@@ -50,10 +50,10 @@ from scratch and achieve the same or better performance as the original network.
 weights is essential to the success of a winning ticket. <i>The winning tickets we find have won the initialization
 lottery: their connections have initial weights that make training particularly effective.</i> (Frankle, Carbin 2019 [1])
 </p>
-<p> Take a look at the picture below to see how winning and random lottery tickets are created from pruned DNNs. The definition of random lottery tickets will be introduced later.
+<p> Take a look at the picture below to see how winning and random lottery tickets are created from pruned NNs. The definition of random lottery tickets will be introduced later.
 <figure>
 <img src="img/tickets.png" alt="winning vs random lottery ticket" width="100%">
-<figcaption>The process of creating winning and random lottery tickets from pruned DNNs. The definition of random lottery tickets will be introduced later. Image by Aleksandra Chrabrowa.</figcaption>
+<figcaption>The process of creating winning and random lottery tickets from pruned neural networks (NNs). The definition of random lottery tickets will be introduced later. Image by Aleksandra Chrabrowa.</figcaption>
 </figure>
 <h2>Essential papers</h2>
 <p>
@@ -93,7 +93,7 @@ tickets. However, sometimes winning tickets are hard to find. Winning and random
 <ul>
 <li><b>one-shot pruning</b> - the simplest pruning approach. The network is trained only once and then the desired
 fraction of weights is pruned.</li>
-<li><b>iterative pruning</b> – repetitive training, pruning a small fraction of weights, and resetting the DNN until
+<li><b>iterative pruning</b> – repetitive training, pruning a small fraction of weights, and resetting the NN until
 the desired fraction of weights is pruned. Computationally expensive.</li></ul>
 <p><b>Usage: </b>Iterative pruning was first used by Frankle, Carbin (2019) [1]: <i>... iterative pruning finds winning tickets that
 match the accuracy of the original network at smaller sizes than does one-shot pruning.</i> All 4 papers use iterative
@@ -102,17 +102,17 @@ pruning and confirm its advantage over one-shot pruning.</p>
 <li><b>global pruning</b> – pruning the desired fraction of the lowest weights across all the layers. Different layers
 may be pruned to a different degree. This is opposed to local pruning, where a set fraction of the lowest
 weights is pruned from each layer separately.</li></ul>
-<p><b>Usage: </b>Global pruning is used by Frankle, Carbin (2019) [1] for larger DNNs, whereas local pruning is used for
-smaller DNNs. Global pruning is essential for Morcos, Yu, et al. (2019)[4]. It is also used by Yu, Edunov, et al. (2019) [5].</p>
+<p><b>Usage: </b>Global pruning is used by Frankle, Carbin (2019) [1] for larger NNs, whereas local pruning is used for
+smaller NNs. Global pruning is essential for Morcos, Yu, et al. (2019)[4]. It is also used by Yu, Edunov, et al. (2019) [5].</p>
 <ul><li><b>learning rate warmup</b> – starting the training with a lower learning rate and linearly increasing it to the
 benchmark value while generating winning tickets.</li></ul>
-<p><b>Usage: </b>This was necessary for Frankle, Carbin (2019) [1] for large DNNs (Resent-18 and VGG-19) but was not
+<p><b>Usage: </b>This was necessary for Frankle, Carbin (2019) [1] for large NNs (Resent-18 and VGG-19) but was not
 deemed satisfactory due to tricky hyperparameter tweaking. Replaced by late rewinding.</p>
 <ul><li><b>late rewinding</b> – a modified way of generating winning tickets. The weights remaining after pruning are
 set to the values at some early training iteration are chosen (typically between 0.1%-7% training progress)
 instead of iteration 0.</li></ul>
 <p><b>Usage: </b>It was first examined by Frankle, Dziugaite, et al. (2019) [2]. It enabled finding winning tickets for large
-DNNs (for example Resnet-50), eliminated the need for learning rate warmup, and allowed pruning more weights.
+NNs (for example Resnet-50), eliminated the need for learning rate warmup, and allowed pruning more weights.
 The importance of late rewinding was confirmed by Morcos, Yu, et al. (2019) [4]. Later Yu, Edunov, et al. (2020) [5]
 stated that late rewinding improved performance but was not essential.</p>
 <p>To sum up, best practices for generating winning tickets are an active area of research. Iterative pruning and
@@ -131,18 +131,18 @@ Papers often begin with one plot that presents the most important results of the
 <p>We can generate winning tickets which have only 5-10% of weights and almost the same accuracy!</p>
 <h2>Transferring winning tickets</h2>
 <p>Winning tickets are costly to find. Discovering them gave us a better understanding of fundamental concepts related
-to DNNs. But are there any practical implications? Pruning has a simple practical application – DNN compression.
+to NNs. But are there any practical implications? Pruning has a simple practical application – NN compression.
 What is the advantage of finding a small subnetwork that can be successfully trained from scratch if in order to do
 so the full network must be trained beforehand?</p>
 <p>
 Morcos, Yu, et al. (2019) [4] seem to have an answer for that. They introduce winning ticket transfer – finding the
-winning ticket for one training configuration (optimizer, dataset) and using it to train a DNN with the same
+winning ticket for one training configuration (optimizer, dataset) and using it to train a NN with the same
 architecture but different configuration. The results are good in particular when transferring from larger datasets
 to smaller ones. This opens new opportunities for transfer learning - transferring optimal (pruned) initializations of
-large DNNs from larger datasets to smaller datasets.<p>
+large NNs from larger datasets to smaller datasets.<p>
 <h2>Summary</h2>
 <p>The 4 papers described above are an interesting example of how a good idea develops. At first preliminary results in the
-carefully selected environment are presented – smaller DNNs, only image domain (Frankle, Carbin 2019 [1])
+carefully selected environment are presented – smaller NNs, only image domain (Frankle, Carbin 2019 [1])
 Gradually, technical details take its final shape (Frankle, Dziugaite et al. 2019 [2]; Morcos, Yu et al. 2019 [4]; Yu,
 Edunov et al. 2020 [5]) and the idea is transferred to other domains – NLP, RL. Practical applications are discovered –
 winning ticket transfer (Morcos, Yu et al. 2019 [4]). It is beneficial to publish some early stages of your
