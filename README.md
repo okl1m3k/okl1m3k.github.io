@@ -1,5 +1,5 @@
 # okl1m3k.github.io
-This webpage contains presentation of my personal projects. Here is current list of content
+This webpage contains a presentation of my personal projects. Here is the current list of content
 - [Clustering COVID-19 around the world with DBSCAN algorithm](https://okl1m3k.github.io/covid/) April 2020
 - [The Lottery Ticket Hypothesis - essential papers](https://okl1m3k.github.io/lottery-ticket-hypothesis/) September 2020
 
